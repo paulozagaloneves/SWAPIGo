@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swapigo-deployment
+  labels:
+    app: swapigo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swapigo-app
+  template:
+    metadata:
+      name: swapigo-deployment
+      labels:
+        app: swapigo-app
+    spec:
+      containers:
+        - name: swapigo-app
+          image: ghcr.io/paulozagaloneves/swapigo:0.1.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "0.20"
+            requests:
+              memory: "64Mi"
+              cpu: "0.10"
+          startupProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always
+      
