@@ -1,6 +1,6 @@
 module SWAPIGo
 
-go 1.25
+go 1.22
 
 require (
 	go.uber.org/multierr v1.11.0 // indirect
