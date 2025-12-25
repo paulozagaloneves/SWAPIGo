@@ -1,0 +1,13 @@
+# Docker build context exclusions
+.git
+.gitignore
+.idea
+.vscode
+bin/
+obj/
+*.log
+*.out
+*.tmp
+node_modules/
+**/*~
+.DS_Store
