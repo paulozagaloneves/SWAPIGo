@@ -15,6 +15,8 @@ RUN go mod edit -go=1.22 && go mod download
 # Copy the rest
 COPY . .
 
+RUN go mod edit -go=1.22
+
 # Build static binary
 ENV CGO_ENABLED=0
 RUN go build -ldflags="-s -w" -o /out/swapigo ./
