@@ -8,6 +8,8 @@ import (
 
 	"SWAPIGo/internal/cache"
 	"SWAPIGo/internal/helpers"
+
+	"go.uber.org/zap"
 )
 
 // SwapiProxyHandler proxies read-only GET requests to https://swapi.info/api/
@@ -67,6 +69,13 @@ func SwapiProxyHandler(client *http.Client, c cache.Cache) http.HandlerFunc {
 			}
 			return
 		}
+
+		// Structured log upstream target
+		zap.L().Info("swapi_proxy_request",
+			zap.String("method", r.Method),
+			zap.String("path", r.URL.Path),
+			zap.String("target", target),
+		)
 
 		// Forward request
 		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, target, nil)

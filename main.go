@@ -4,6 +4,7 @@ import (
 	"SWAPIGo/handler"
 	"SWAPIGo/internal/cache"
 	"SWAPIGo/internal/helpers"
+	"SWAPIGo/internal/logging"
 	"context"
 	"log"
 	"net/http"
@@ -11,6 +12,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -18,6 +21,16 @@ func main() {
 	httpClient := &http.Client{Timeout: 10 * time.Second}
 
 	c := cache.New(500, 5*time.Minute) // capacity 500, TTL 5m
+
+	// Structured logger (zap)
+	zapLogger, err := logging.New()
+	if err != nil {
+		log.Fatalf("failed to init logger: %v", err)
+	}
+	defer func() { _ = zapLogger.Sync() }()
+
+	// Make zap.L() return this logger globally
+	zap.ReplaceGlobals(zapLogger)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler.InfoHandler)
@@ -33,8 +46,10 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:         ":" + port,
-		Handler:      helpers.Logging(mux),
+		Addr: ":" + port,
+		// You can replace helpers.Logging or compose them together:
+		// Handler: logging.Middleware(zapLogger)(mux),
+		Handler:      logging.Middleware(zapLogger)(helpers.Logging(mux)),
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
