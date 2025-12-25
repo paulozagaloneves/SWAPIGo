@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: SWAPIGo-svc
+  name: swapigo-svc
 spec:
   selector:
-    app: SWAPIGo-app
+    app: swapigo-app
   ports:
     - protocol: TCP
       port: 8080
