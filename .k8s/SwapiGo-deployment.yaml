@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: SWAPIGo-deployment
+  labels:
+    app: SWAPIGo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: SWAPIGo-app
+  template:
+    metadata:
+      name: SWAPIGo-deployment
+      labels:
+        app: SWAPIGo-app
+    spec:
+      containers:
+        - name: SWAPIGo-app
+          image: ghcr.io/paulozagaloneves/swapigo:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always
+      
